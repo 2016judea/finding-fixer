@@ -56,7 +56,7 @@ function view(slug, full) {
     if (full) return { ...base, draft: d ? strip(d) : null };
     // Free: the first finding's paragraph, and only a title for the rest.
     if (!d) return { ...base, draft: null };
-    return { ...base, draft: i === 0 ? { title: d.title, what_failed: d.what_failed, cap_paragraph: d.cap_paragraph } : { title: d.title } };
+    return { ...base, draft: i === 0 ? { title: d.title, what_failed: d.what_failed, vs_filed_plan: d.vs_filed_plan, cap_paragraph: d.cap_paragraph } : { title: d.title } };
   });
   const history = (BY_EIN.get(a.ein) || []).filter((h) => h.report_id !== a.report_id).sort((x, y) => y.year - x.year)
     .map((h) => ({ year: h.year, report_id: h.report_id, findings: sorted(h.findings).map((f) => ({ ref: f.ref, requirement_names: f.requirement_names, repeat: f.repeat, material_weakness: f.material_weakness, significant_deficiency: f.significant_deficiency, title: (draftFor(h, f) || {}).title || "" })) }));

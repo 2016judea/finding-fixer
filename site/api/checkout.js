@@ -3,7 +3,7 @@
 // (Stripe's own invoice email is a second copy of it); the webhook, via the shared stripe-router,
 // emails it when the session completes. A /for/<token>/ page returns to itself after paying.
 const { SITE, PRODUCT, TOOL, stripe, newPassword } = require("./_lib");
-const meta = require("../data/meta.json");
+const meta = require("../public/data/meta.json");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });

@@ -3,7 +3,7 @@
 
     python3 scripts/build_for.py      # outreach/round1/ledger.csv -> private/for/<token>/index.html
 
-Each page is site/index.html with window.FOR = {t, n, line, v} set before the app runs, so it
+Each page is site/public/index.html with window.FOR = {t, n, line, v} set before the app runs, so it
 opens on the reader's own audit and tags every funnel event with the token and the A/B variant
 (v: "A" price in the email, "B" price only on the page). The token is in the PATH because Vercel
 analytics drops ?query and #hash; the variant never appears in the URL. Pages and ledger are
@@ -17,8 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LEDGER = ROOT / "outreach/round1/ledger.csv"
 OUT = ROOT / "private/for"
-index = {r["s"] for r in json.loads((ROOT / "site/data/index.json").read_text())}
-page = (ROOT / "site/index.html").read_text()
+index = {r["s"] for r in json.loads((ROOT / "site/public/data/index.json").read_text())}
+page = (ROOT / "site/public/index.html").read_text()
 anchor = "<script>\nconst $ = s =>"
 assert anchor in page
 shutil.rmtree(OUT, ignore_errors=True)

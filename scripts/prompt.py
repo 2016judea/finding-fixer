@@ -6,6 +6,7 @@ The model reasons over the finding; it never supplies a number. Dollars, dates a
 copied from the finding text or left as a bracketed blank for the nonprofit to fill.
 """
 import json
+import re
 from pathlib import Path
 
 SYSTEM = """You draft corrective action plans (CAPs) for Minnesota nonprofits that received a finding on their federal Single Audit. The reader is the nonprofit's finance lead; the plan goes to their auditor and to the pass-through agency that issues the management decision under 2 CFR 200.521.
@@ -29,11 +30,12 @@ Rules you must follow:
 SCHEMA = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["title", "what_failed", "root_cause", "why_prior_plan_fell_short", "actions", "responsible_person",
+    "required": ["title", "what_failed", "vs_filed_plan", "root_cause", "why_prior_plan_fell_short", "actions", "responsible_person",
                  "completion_target", "monitoring", "cap_paragraph", "agency_questions", "evidence_to_attach"],
     "properties": {
         "title": {"type": "string", "description": "Six words or fewer naming the finding, e.g. 'Program income not tracked'."},
         "what_failed": {"type": "string", "description": "One or two plain sentences on what the auditor found. From the Condition."},
+        "vs_filed_plan": {"type": "string", "description": "One or two plain sentences to the nonprofit: what the plan they already filed left out that this draft adds (a root cause, a record the agency can inspect, an owner, a way to check it held). Name the gap concretely. If none was filed, say so."},
         "root_cause": {"type": "string", "description": "The specific gap in people, process or system. Not a restatement of the condition. One to three sentences."},
         "why_prior_plan_fell_short": {"type": "string", "description": "Only for a repeat finding: why the earlier plan did not hold. Empty string otherwise."},
         "actions": {
@@ -77,6 +79,53 @@ def user_content(audit, finding):
         "Draft the corrective action plan.",
     ]
     return "\n\n".join(parts)
+
+
+# The number guard. Rule 2 above is a request; this is the enforcement. Every figure in a draft
+# must already appear in what the model was shown (the finding, the filed CAP, the award data)
+# or be a regulation citation. Anything else is replaced by [number], a blank, so a number the
+# model made up can never reach the page. site/api/_guard.js is the same function in JS.
+NUM = re.compile(r"(?<![\w.])\$?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?%?")
+CITE = re.compile(r"\b\d+\s*(?:CFR|C\.F\.R\.|U\.S\.C\.)\s*(?:part\s*|§\s*)?\d+(?:\.\d+)*(?:\([a-z0-9]+\))*|\b200\.\d+(?:\([a-z0-9]+\))*|§\s*\d+(?:\.\d+)*", re.I)
+
+
+# Spelled-out counts from three up ("nine control failures"): same rule. "one" and "two" are left
+# alone; they are mostly grammar ("one person", "two signatures"), not figures.
+WORDNUM = re.compile(r"\b(?:three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)\b", re.I)
+
+
+def _norm(tok):
+    t = tok.replace("$", "").replace(",", "").rstrip("%")
+    return t.rstrip(".") or t
+
+
+def allowed_numbers(source):
+    return ({_norm(m.group()) for m in NUM.finditer(source)} | {_norm(m.group()) for c in CITE.finditer(source + "\n" + SYSTEM) for m in NUM.finditer(c.group())}
+            | {m.group().lower() for m in WORDNUM.finditer(source)})
+
+
+def scrub(value, ok, removed):
+    """Return value with every figure not in `ok` replaced by [number]; record what was removed."""
+    if isinstance(value, dict):
+        return {k: (v if k.startswith("_") else scrub(v, ok, removed)) for k, v in value.items()}
+    if isinstance(value, list):
+        return [scrub(v, ok, removed) for v in value]
+    if not isinstance(value, str):
+        return value
+    cites = [(m.start(), m.end()) for m in CITE.finditer(value)]
+
+    def sub(m):
+        if any(a <= m.start() < b for a, b in cites) or _norm(m.group()) in ok:
+            return m.group()
+        removed.append(m.group())
+        return "[number]"
+
+    def wsub(m):
+        if m.group().lower() in ok:
+            return m.group()
+        removed.append(m.group())
+        return "[number]"
+    return WORDNUM.sub(wsub, NUM.sub(sub, value))
 
 
 if __name__ == "__main__":

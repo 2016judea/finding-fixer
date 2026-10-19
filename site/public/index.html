@@ -44,6 +44,7 @@ h2{font-size:20px;margin:26px 0 6px}
 details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 summary{cursor:pointer;color:var(--acc);font-weight:600;font-size:15px;min-height:32px;display:flex;align-items:center}
 .quote{white-space:pre-wrap;font-size:15px;line-height:1.5;color:var(--ink);background:var(--bg);border-left:3px solid var(--line);padding:8px 12px;margin:8px 0 0;border-radius:0 8px 8px 0;max-height:420px;overflow:auto}
+.gap{margin-top:12px;border-left:3px dashed var(--mute);padding:6px 14px}.gap .lbl{font-size:13px;font-weight:700;color:var(--mute);letter-spacing:.04em;text-transform:uppercase}.gap p{margin:4px 0 0;font-size:16px;line-height:1.5}
 .draft{margin-top:12px;border-left:3px solid var(--green);background:var(--green2);border-radius:0 10px 10px 0;padding:10px 14px}
 .draft .lbl{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.04em;text-transform:uppercase}
 .draft p{margin:6px 0 0;font-size:16px;line-height:1.5}
@@ -215,8 +216,9 @@ const sevTags = f => [f.material_weakness && '<span class="tag mw">Material weak
   f.repeat && `<span class="tag rep">Repeat${f.prior_refs.length ? ' of ' + esc(f.prior_refs.join(', ')) : ''}</span>`].filter(Boolean).join(' ');
 const progLine = p => `<div class="prog"><b>${esc(p.name || 'Program not named')}</b> <span class="small">ALN ${esc(p.aln)} · ${esc(p.agency)}${typeof p.expended === 'number' ? ' · ' + money(p.expended) + ' spent' : ''}</span><br><span class="via">${p.direct ? 'Direct from the federal agency' : 'Passed through ' + esc(p.passthrough.join(', ') || 'an agency not named in the filing')}${p.major ? ' · major program' : ''}</span></div>`;
 
+const gapHtml = d => d && d.vs_filed_plan ? `<div class="gap"><div class="lbl">What your filed plan left out</div><p>${esc(d.vs_filed_plan)}</p></div>` : '';
 function draftFull(d, f) {
-  return `<div class="draft"><div class="lbl">Drafted plan</div><p>${esc(d.cap_paragraph)}</p></div>
+  return `${gapHtml(d)}<div class="draft"><div class="lbl">Drafted plan</div><p>${esc(d.cap_paragraph)}</p></div>
   <div class="sec">
     <h4>What failed</h4><p>${esc(d.what_failed)}</p>
     <h4>Root cause</h4><p>${esc(d.root_cause)}</p>
@@ -231,7 +233,7 @@ function findingCard(f, i) {
   const d = f.draft, full = V.full;
   let body;
   if (full) body = d ? draftFull(d, f) : `<div class="draft" data-pending="${esc(f.ref)}"><div class="lbl">Drafted plan</div><p class="small">Drafting this finding now, from the auditor's text… (about a minute)</p></div>`;
-  else if (i === 0 && d && d.cap_paragraph) body = `<div class="draft"><div class="lbl">Drafted plan · free</div><p>${esc(d.cap_paragraph)}</p></div><p class="small" style="margin:8px 0 0">The full plan adds the root cause, the steps with the record each leaves, the completion target, how to monitor it, and what ${esc(V.passthroughs[0] || 'the agency')} will ask.</p>`;
+  else if (i === 0 && d && d.cap_paragraph) body = `${gapHtml(d)}<div class="draft"><div class="lbl">Drafted plan · free</div><p>${esc(d.cap_paragraph)}</p></div><p class="small" style="margin:8px 0 0">The full plan adds the root cause, the steps with the record each leaves, the completion target, how to monitor it, and what ${esc(V.passthroughs[0] || 'the agency')} will ask.</p>`;
   else body = `<div class="locked"><div class="draft" aria-hidden="true"><div class="lbl">Drafted plan</div><p>Finding ${esc(f.ref)}: the organization will ••••• ••• •••••• •• ••••••• ••••• ••• ••••••• •••••••. The ••••••• •••••••• will •••••• •••• ••••• •• ••• ••••• •• •••• ••••••• •••• •• ••••••••• •• ••• •••••• ••••••••. •••••••••• •• ••• •••••• •• ••••• •••• •••• ••••.</p></div><div class="over">The plan for ${esc(f.ref)} is in the full document.</div></div>`;
   return `<div class="card" id="f-${esc(f.ref)}"><h3><span class="ref">${esc(f.ref)}</span>${esc((d && d.title) || f.requirement_names.join(', ') || 'Finding')}</h3>
     <div class="chips">${f.requirement_names.map(n => `<span class="tag">${esc(n)}</span>`).join('')} ${sevTags(f)}</div>
@@ -347,7 +349,7 @@ function download() {
     L.push(`## Finding ${f.ref}: ${d.title || f.requirement_names.join(', ')}`, ``, `Compliance requirement: ${f.requirement_names.join(', ')}. ${[f.material_weakness && 'Material weakness', f.significant_deficiency && 'Significant deficiency', f.questioned_costs && 'Questioned costs', f.repeat && 'Repeat finding' + (f.prior_refs.length ? ' (' + f.prior_refs.join(', ') + ')' : '')].filter(Boolean).join('. ')}`, ``);
     for (const p of f.programs) L.push(`Program: ${p.name} (ALN ${p.aln}, ${p.agency})${p.direct ? ', direct' : ', passed through ' + p.passthrough.join(', ')}.`);
     if (!d.cap_paragraph) { L.push(``, `(Plan not drafted.)`, ``); continue; }
-    L.push(``, `### Corrective action plan (2 CFR 200.511(c))`, ``, d.cap_paragraph, ``, `**What failed.** ${d.what_failed}`, ``, `**Root cause.** ${d.root_cause}`, ``);
+    L.push(``, `### Corrective action plan (2 CFR 200.511(c))`, ``, d.cap_paragraph, ``, `**What failed.** ${d.what_failed}`, ``, ...(d.vs_filed_plan ? [`**What the filed plan left out.** ${d.vs_filed_plan}`, ``] : []), `**Root cause.** ${d.root_cause}`, ``);
     if (d.why_prior_plan_fell_short) L.push(`**Why the prior plan did not hold.** ${d.why_prior_plan_fell_short}`, ``);
     L.push(`**Steps**`, ...d.actions.map((a, i) => `${i + 1}. ${a.step} (${a.owner_role}). Record: ${a.record_produced}`), ``, `**Responsible person.** ${d.responsible_person}`, ``, `**Anticipated completion.** ${d.completion_target}`, ``, `**Monitoring.** ${d.monitoring}`, ``);
     L.push(`### What ${V.passthroughs[0] || 'the agency'} will ask`, ...d.agency_questions.map(q => `- ${q}`), ``, `### Have ready`, ...d.evidence_to_attach.map(q => `- ${q}`), ``);

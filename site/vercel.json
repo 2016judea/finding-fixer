@@ -1,4 +1,4 @@
-{"buildCommand":"echo build","outputDirectory":".",
- "functions":{"api/data.js":{"includeFiles":"api/_full/**","memory":1024,"maxDuration":120},"api/preview.js":{"includeFiles":"api/_full/**","memory":1024},"api/draft.js":{"includeFiles":"api/_full/**","memory":1024,"maxDuration":300}},
+{"buildCommand":"echo build","outputDirectory":"public",
+ "functions":{"api/data.js":{"includeFiles":"api/_full/**","memory":1024,"maxDuration":120},"api/preview.js":{"includeFiles":"api/_full/**","memory":1024},"api/draft.js":{"includeFiles":"api/_full/**","memory":1024,"maxDuration":300},"api/checkout.js":{"includeFiles":"public/{offer.json,data/meta.json}"},"api/session-status.js":{"includeFiles":"public/offer.json"},"api/stripe-webhook.js":{"includeFiles":"public/offer.json"}},
  "headers":[{"source":"/data/(.*)","headers":[{"key":"Cache-Control","value":"public, max-age=0, must-revalidate"}]}],
- "redirects":[{"source":"/api/_full/:path*","destination":"/","permanent":false}]}
+ "redirects":[{"source":"/api/_full/:path*","destination":"/","permanent":false},{"source":"/api/%5Ffull/:path*","destination":"/","permanent":false},{"source":"/api/%5ffull/:path*","destination":"/","permanent":false}]}

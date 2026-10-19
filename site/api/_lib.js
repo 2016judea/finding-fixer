@@ -9,7 +9,7 @@
 // HMAC of it under ACCESS_SECRET. A password we never issued fails without a network call;
 // one we issued unlocks once Stripe has a paid session for its nonce.
 const crypto = require("crypto");
-const TOOL = require("../offer.json");
+const TOOL = require("../public/offer.json");
 
 const SITE = process.env.SITE_URL || TOOL.site;
 const PRODUCT = TOOL.product;

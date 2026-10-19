@@ -27,8 +27,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 SITE = REPO / "site"
 PRIVATE = REPO / "private"
-EXTRA = [(PRIVATE / "data", "api/_full"), (PRIVATE / "for", "for")]
-OFFER = json.loads((SITE / "offer.json").read_text())
+EXTRA = [(PRIVATE / "data", "api/_full"), (PRIVATE / "for", "public/for")]
+OFFER = json.loads((SITE / "public/offer.json").read_text())
 PROJECT = OFFER["product"]
 TEAM = "team_XnhPzBEcaSfEmZFo9M2isLFY"
 SKIP = {".git", "node_modules", ".vercel", "__pycache__", ".DS_Store", ".env"}
@@ -122,7 +122,7 @@ def deploy(token):
     print(f"  {len(files)} files, {total:,} bytes")
     c, out = req("POST", f"https://api.vercel.com/v13/deployments?teamId={TEAM}&skipAutoDetectionConfirmation=1", token,
                  {"name": PROJECT, "project": PROJECT, "target": "production", "files": files,
-                  "projectSettings": {"framework": None, "buildCommand": "echo build", "outputDirectory": "."}})
+                  "projectSettings": {"framework": None, "buildCommand": "echo build", "outputDirectory": "public", "installCommand": "echo skip"}})
     if c >= 400 or out.get("error"):
         sys.exit(f"create failed: {c} {json.dumps(out.get('error'))}")
     url = out["url"]

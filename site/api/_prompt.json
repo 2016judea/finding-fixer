@@ -6,6 +6,7 @@
   "required": [
    "title",
    "what_failed",
+   "vs_filed_plan",
    "root_cause",
    "why_prior_plan_fell_short",
    "actions",
@@ -24,6 +25,10 @@
    "what_failed": {
     "type": "string",
     "description": "One or two plain sentences on what the auditor found. From the Condition."
+   },
+   "vs_filed_plan": {
+    "type": "string",
+    "description": "One or two plain sentences to the nonprofit: what the plan they already filed left out that this draft adds (a root cause, a record the agency can inspect, an owner, a way to check it held). Name the gap concretely. If none was filed, say so."
    },
    "root_cause": {
     "type": "string",

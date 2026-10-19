@@ -7,6 +7,7 @@ const Anthropic = require("@anthropic-ai/sdk");
 const { access } = require("./_lib");
 const { raw } = require("./_view");
 const PROMPT = require("./_prompt.json");
+const { allowedNumbers, scrub } = require("./_guard");
 
 const client = new Anthropic();
 const made = new Map(); // report|ref -> draft, per warm instance
@@ -59,7 +60,9 @@ module.exports = async (req, res) => {
     });
     if (m.stop_reason === "refusal") return res.status(422).json({ error: "It couldn't draft that finding." });
     if (m.stop_reason === "max_tokens") return res.status(413).json({ error: "That finding was too long for one draft." });
-    const d = JSON.parse(m.content.filter((x) => x.type === "text").map((x) => x.text).join(""));
+    const removed = [];
+    const d = scrub(JSON.parse(m.content.filter((x) => x.type === "text").map((x) => x.text).join("")), allowedNumbers(content(r.audit, r.finding), PROMPT.system), removed);
+    if (removed.length) console.log(`[draft] guard replaced ${removed.length} figure(s) in ${key}`);
     made.set(key, d);
     console.log(`[draft] ${acc.kind} ${key} in=${m.usage.input_tokens} out=${m.usage.output_tokens}`);
     res.setHeader("Cache-Control", "no-store");
@@ -70,3 +73,4 @@ module.exports = async (req, res) => {
   }
 };
 const strip = (d) => Object.fromEntries(Object.entries(d).filter(([k]) => !k.startsWith("_")));
+module.exports.content = content;

@@ -8,9 +8,9 @@ Writes
                              org, audit, each finding with the auditor's text, the filed CAP, the
                              program and who passed it through. Gitignored; deployed as api/_full/.
   private/data/drafts.json   the drafted CAPs (scripts/draft.py), keyed report_id|finding_ref.
-  site/data/index.json       the public search index: name, city, EIN, latest flagged year,
+  site/public/data/index.json       the public search index: name, city, EIN, latest flagged year,
                              finding count, repeat flag. No texts, no contacts.
-  site/data/meta.json        counts for the page and the offer. Every number on the page is read
+  site/public/data/meta.json        counts for the page and the offer. Every number on the page is read
                              from here, never typed.
 
 Only `entity_type == "non-profit"` rows ship; schools, counties and tribes are a different buyer.
@@ -23,8 +23,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 FAC = ROOT / "data/fac"
 PRIV = ROOT / "private/data"
-PUB = ROOT / "site/data"
-OFFER = json.loads((ROOT / "site/offer.json").read_text())
+PUB = ROOT / "site/public/data"
+OFFER = json.loads((ROOT / "site/public/offer.json").read_text())
 
 # 2 CFR 200 Appendix XI compliance requirement letters (the FAC's type_requirement).
 REQ = {"A": "Activities allowed or unallowed", "B": "Allowable costs / cost principles", "C": "Cash management",

@@ -1,0 +1,4 @@
+{"buildCommand":"echo build","outputDirectory":".",
+ "functions":{"api/data.js":{"includeFiles":"api/_full/**","memory":1024,"maxDuration":120},"api/preview.js":{"includeFiles":"api/_full/**","memory":1024},"api/draft.js":{"includeFiles":"api/_full/**","memory":1024,"maxDuration":300}},
+ "headers":[{"source":"/data/(.*)","headers":[{"key":"Cache-Control","value":"public, max-age=0, must-revalidate"}]}],
+ "redirects":[{"source":"/api/_full/:path*","destination":"/","permanent":false}]}

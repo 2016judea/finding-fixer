@@ -1,0 +1,9 @@
+.env
+.access_secret
+private/
+outreach/
+data/cache/
+node_modules/
+__pycache__/
+.playwright-mcp/
+*.log

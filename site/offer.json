@@ -1,0 +1,8 @@
+{
+  "product": "finding-fixer",
+  "name": "Finding Fixer: the full corrective action plan",
+  "site": "https://finding-fixer.vercel.app",
+  "price_usd": 100,
+  "checkout_line": "Every finding on your latest Single Audit answered in the 2 CFR 200.511(c) form: cause, action, owner, date, with the agency page for the management decision.",
+  "price_basis": "GSA CALC 'Senior Accountant' median ceiling rate $128.79/hr (40 awarded rates, read 2026-10-18) x 8 hours = $1,030 for one consultant day; a tenth, rounded, is $100."
+}

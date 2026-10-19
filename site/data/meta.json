@@ -1,0 +1,92 @@
+{
+ "built": "2026-10-19",
+ "years": [
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "price_usd": 100,
+ "example": "agate-housing-and-services-inc-minneapolis",
+ "n_drafted": 14,
+ "n_orgs": 359,
+ "n_audits": 664,
+ "n_findings_latest": 545,
+ "n_findings_all": 1094,
+ "n_repeat_findings_latest": 161,
+ "n_repeat_orgs": 177,
+ "n_nonprofit_audits_by_year": {
+  "2022": 677,
+  "2023": 658,
+  "2024": 611,
+  "2025": 547
+ },
+ "n_flagged_by_year": {
+  "2022": 184,
+  "2023": 203,
+  "2024": 152,
+  "2025": 125
+ },
+ "n_auditor_firms": 65,
+ "top_requirements": [
+  [
+   "Special tests and provisions",
+   126
+  ],
+  [
+   "Allowable costs / cost principles",
+   111
+  ],
+  [
+   "Other",
+   106
+  ],
+  [
+   "Reporting",
+   65
+  ],
+  [
+   "Procurement, suspension and debarment",
+   64
+  ],
+  [
+   "Activities allowed or unallowed",
+   46
+  ]
+ ],
+ "top_passthroughs": [
+  [
+   "Minnesota Department of Education",
+   98
+  ],
+  [
+   "Minnesota Department of Human Services",
+   70
+  ],
+  [
+   "MN DEED",
+   26
+  ],
+  [
+   "Minnesota Department of Public Safety",
+   24
+  ],
+  [
+   "Minnesota Housing Finance Agency",
+   19
+  ],
+  [
+   "Minnesota Department of Health",
+   16
+  ]
+ ],
+ "text_coverage": {
+  "with_text": 540,
+  "stub": 5,
+  "of": 545
+ },
+ "prior_cap_coverage": {
+  "with_cap": 545,
+  "of": 545
+ }
+}

@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding Fixer</title>
+<meta name="description" content="Finding Fixer. For Minnesota nonprofits with a finding on their federal Single Audit: see every finding and get the corrective action plan drafted, in the form the auditor and the pass-through agency expect.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232b2f8a'/><path d='M8 17l5 5 11-12' stroke='white' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--ink:#1c1d2b;--mute:#5f6170;--line:#e3e0d8;--acc:#2b2f8a;--acc2:#eceef9;
+ --red:#b3261e;--red2:#fbeae8;--amber:#8a5a12;--amber2:#fbf1df;--purple:#6b2d8a;--purple2:#f3e9f8;--green:#1f6b45;--green2:#e6f2ec}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#15161c;--card:#1e1f28;--ink:#eeedf3;--mute:#a0a2b0;--line:#30323d;--acc:#9ea3ee;--acc2:#262a4a;
+ --red:#f28b82;--red2:#3a1f1d;--amber:#e0b25c;--amber2:#3a2f1a;--purple:#c99bdf;--purple2:#33203d;--green:#7cc4a0;--green2:#1c3328}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:28px;line-height:1.15;margin:4px 0 6px;letter-spacing:-.01em}
+h2{font-size:20px;margin:26px 0 6px}
+.sub{color:var(--mute);margin:0 0 16px}
+.brand{font-weight:700;color:var(--acc);font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+#q{width:100%;font-size:18px;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);outline:none}
+#q:focus{border-color:var(--acc)}
+#hits{list-style:none;margin:6px 0 0;padding:0}
+#hits li button{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:6px 0;font:inherit;color:inherit;cursor:pointer;min-height:48px}
+#hits li button:hover{border-color:var(--acc)}
+.small{font-size:14px;color:var(--mute)}
+.who{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px}
+.who h1{font-size:24px;margin:0}
+.big{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.big div{background:var(--acc2);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.25}
+.big b{display:block;font-size:26px;line-height:1.1;color:var(--acc)}
+.big .r b{color:var(--purple)}.big .r{background:var(--purple2)}
+.big .d b{font-size:18px;padding-top:4px}
+@media (max-width:420px){.big{grid-template-columns:1fr 1fr}.big .d{grid-column:1/-1}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{display:inline-block;font-size:13px;border-radius:6px;padding:2px 8px;background:var(--acc2);color:var(--acc);font-weight:600}
+.tag.mw{background:var(--red2);color:var(--red)}.tag.sd{background:var(--amber2);color:var(--amber)}.tag.rep{background:var(--purple2);color:var(--purple)}.tag.ok{background:var(--green2);color:var(--green)}.tag.qc{background:var(--red2);color:var(--red)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}
+.card h3{margin:0;font-size:18px;line-height:1.25}
+.ref{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--mute);margin-right:6px}
+.prog{font-size:15px;margin-top:8px}
+.prog b{color:var(--acc)}
+.via{color:var(--mute)}
+details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;color:var(--acc);font-weight:600;font-size:15px;min-height:32px;display:flex;align-items:center}
+.quote{white-space:pre-wrap;font-size:15px;line-height:1.5;color:var(--ink);background:var(--bg);border-left:3px solid var(--line);padding:8px 12px;margin:8px 0 0;border-radius:0 8px 8px 0;max-height:420px;overflow:auto}
+.draft{margin-top:12px;border-left:3px solid var(--green);background:var(--green2);border-radius:0 10px 10px 0;padding:10px 14px}
+.draft .lbl{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.04em;text-transform:uppercase}
+.draft p{margin:6px 0 0;font-size:16px;line-height:1.5}
+.sec{margin-top:12px}
+.sec h4{margin:12px 0 4px;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.sec p,.sec li{font-size:16px;margin:4px 0}
+.steps{margin:0;padding-left:20px}
+.steps li{margin:6px 0}
+.steps .rec{display:block;font-size:14px;color:var(--green)}
+.locked{position:relative;margin-top:12px}
+.locked .draft{filter:blur(5px);opacity:.6;pointer-events:none;user-select:none}
+.locked .over{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--ink);text-align:center;padding:10px}
+.pay{background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:16px;margin:16px 0}
+.pay h3{margin:0;font-size:20px;line-height:1.25}
+.pay p{margin:8px 0 0;font-size:15px;color:var(--mute)}
+.pay .price{color:var(--ink);font-weight:700}
+.pay .go{display:block;width:100%;font:inherit;font-weight:700;font-size:17px;padding:14px;margin-top:12px;border:0;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer;min-height:48px}
+.pay .go:disabled{opacity:.6}
+.pay .alt{display:block;width:100%;background:none;border:0;color:var(--acc);font:inherit;font-size:15px;padding:12px 0 2px;cursor:pointer;min-height:44px}
+.pwf{margin-top:8px}.pwf input{width:100%;font-size:17px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-family:ui-monospace,Menlo,monospace;letter-spacing:1px;text-transform:uppercase}
+.pwf button{font:inherit;font-weight:600;font-size:16px;padding:12px 14px;margin-top:8px;border-radius:10px;border:1px solid var(--acc);background:transparent;color:var(--acc);cursor:pointer;width:100%;min-height:48px}
+.pwerr{color:var(--red);font-size:15px;margin:6px 0 0}
+.co{margin-top:12px}
+.full{font-size:14px;color:var(--green);font-weight:600;margin:6px 0 0}
+.dl{font:inherit;font-size:15px;padding:10px 14px;border-radius:10px;border:1px solid var(--acc);background:transparent;color:var(--acc);cursor:pointer;margin:10px 8px 0 0;min-height:44px}
+.agency{background:var(--card);border:1px solid var(--acc);border-radius:14px;padding:14px 16px;margin:12px 0}
+.agency h3{margin:0 0 4px;font-size:18px}
+.agency ul{margin:4px 0 0;padding-left:20px}
+.agency li{font-size:16px;margin:4px 0}
+.hist td{padding:6px 6px;border-bottom:1px solid var(--line);font-size:15px;vertical-align:top}
+.hist{width:100%;border-collapse:collapse}
+footer{margin-top:40px;font-size:13px;color:var(--mute);border-top:1px solid var(--line);padding-top:14px}
+#back{background:none;border:0;color:var(--acc);font:inherit;font-size:15px;padding:8px 0;cursor:pointer}
+.hide{display:none}
+.example{margin:28px 0 0;padding-top:16px;border-top:1px solid currentColor;opacity:.7;font-size:15px}
+.forline{font-size:15px;color:var(--mute);margin:0 0 10px}
+.empty{color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:14px}
+@media print{#home,footer,.pay,#back,.example,.forline,details:not([open]) summary,.dl{display:none!important}body{background:#fff;color:#000;font-size:12pt}.card,.agency,.who{border:1px solid #999;break-inside:avoid}.draft{background:#fff;border-left:3px solid #000}.quote{max-height:none}}
+</style>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script><script defer src="/_vercel/insights/script.js"></script>
+<!-- bm-posthog:begin v2 — shared across every Vercel prototype; source ~/.claude/skills/site-analytics/posthog_snippet.html. ?me=1 opts this browser out on this site (?me=0 undoes); ?me=1&next=host1,host2 walks the opt-out across sites; headless (navigator.webdriver) never loads it. -->
+<script>
+(function(w,d){var S="finding-fixer",K="bm_me",me=false,u,p,n;
+try{u=new URLSearchParams(location.search);p=u.get("me");n=u.get("next");}catch(e){}
+try{if(p==="1"){localStorage.setItem(K,"1");}else if(p==="0"){localStorage.removeItem(K);}}catch(e){}
+if(p==="1"){d.cookie=K+"=1; path=/; max-age=63072000; SameSite=Lax";}else if(p==="0"){d.cookie=K+"=; path=/; max-age=0; SameSite=Lax";}
+try{me=localStorage.getItem(K)==="1";}catch(e){}
+if(!me&&/(?:^|; )bm_me=1/.test(d.cookie))me=true;
+if(p==="1"&&n){var h=n.split(","),f=h.shift();if(/^[a-z0-9.-]+$/.test(f)&&(f.slice(-11)===".vercel.app"||f==="brickandmortar.dev"||f==="readglean.com")){location.replace("https://"+f+"/?me=1"+(h.length?"&next="+h.join(","):""));}}
+if(navigator.webdriver===true)return;
+!function(t,e){var o,n,p,r;e.__SV||(w.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister identify setPersonProperties reset get_distinct_id get_session_id alias set_config startSessionRecording stopSessionRecording opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing captureException getFeatureFlag isFeatureEnabled onFeatureFlags".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(d,w.posthog||[]);
+posthog.init("phc_yFgRGppL6H7DvhgZTQKbHdrY5oqnpLT482rrNYtLqnAx",{api_host:"https://us.i.posthog.com",person_profiles:"identified_only",persistence:"localStorage+cookie",opt_out_capturing_by_default:me});
+if(me){posthog.opt_out_capturing();}else{if(p==="0")posthog.opt_in_capturing();posthog.register({site:S});}
+})(window,document);
+</script>
+<!-- bm-posthog:end -->
+</head>
+<body>
+<main>
+  <div class="brand">Finding Fixer</div>
+  <div id="home">
+    <h1>Your audit finding, answered.</h1>
+    <p class="sub">For Minnesota nonprofits with a finding on their federal Single Audit. Type your group's name. See every finding and the corrective action plan, drafted. No sign-up.</p>
+    <input id="q" type="search" placeholder="Your nonprofit's name" autocomplete="off" autocapitalize="words" enterkeyhint="search" aria-label="Your nonprofit's name">
+    <ul id="hits"></ul>
+    <p id="loading" class="small">Loading <span data-m="n_orgs"></span> Minnesota nonprofits with a finding on file…</p>
+  </div>
+  <div id="result" class="hide"></div>
+  <footer>
+    <b>Where this comes from.</b> The Federal Audit Clearinghouse (fac.gov), the public record every group spending $750,000 or more in federal money files each year.
+    Minnesota nonprofit Single Audits <span data-m="years_span"></span>: <span data-m="n_audits"></span> of them carried a finding, from <span data-m="n_orgs"></span> groups;
+    <span data-m="n_repeat_orgs"></span> of those groups were flagged in more than one year. The finding text and the filed plan are the auditor's and the group's own words, as filed.
+    The drafted plan is written by a model from that text; it never adds a number, a date or a name that is not in the record, and the group fills the blanks.
+    The agency's six-month clock is 2 CFR 200.521(d), counted from the date the FAC accepted the audit.
+    <br><br>Every finding, the auditor's text, the filed plan and one drafted plan are open to anyone. The full plan for every finding, with the agency page, is $<span data-m="price_usd"></span>, once.
+    Questions: <a href="mailto:aidan@brickandmortar.dev">aidan@brickandmortar.dev</a>. <a href="https://randomaidan.substack.com/p/business-prototypes">Why we built it</a>.
+  </footer>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num = n => Number(n).toLocaleString('en-US');
+const money = n => typeof n === 'number' ? '$' + Math.round(n).toLocaleString('en-US') : '';
+const plural = (n, a, b) => num(n) + ' ' + (n === 1 ? a : (b || a + 's'));
+const dateStr = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+const FOR = window.FOR || null;   // a /for/<token>/ page: opens on the reader's own audit; v = the A/B variant
+const PK = "pk_live_51TUvvcBzD4mN8eOD28H6oQkFwFHwF1SLtWxN1vHRmnSxntWFefgd33mEIVmjv8ekxWgkZft3OpPlzmVXMIeHPBwj003998hjTf";
+let IDX = null, M = {}, V = null, PW = null, state = { slug: '', example: false };
+
+// Every funnel event goes to both Vercel and PostHog. The token and variant ride along on a /for/ page,
+// never in the URL (Vercel drops the query string; the path token is enough to tell who).
+function track(name, props) {
+  props = Object.assign({}, props || {}, FOR ? { token: FOR.t, variant: FOR.v || '' } : {});
+  try { window.va && window.va('event', Object.assign({ name }, props)); } catch (e) {}
+  try { window.posthog && window.posthog.capture && window.posthog.capture(name, props); } catch (e) {}
+}
+if (FOR) try { window.posthog && window.posthog.register && window.posthog.register({ for_token: FOR.t, variant: FOR.v || '' }); } catch (e) {}
+const store = { get: () => { try { return localStorage.getItem('ff.pw'); } catch (e) { return null; } }, set: v => { try { v ? localStorage.setItem('ff.pw', v) : localStorage.removeItem('ff.pw'); } catch (e) {} } };
+
+const META = fetch('/data/meta.json').then(r => r.json()).then(m => {
+  M = m; m.years_span = m.years[0] + '–' + m.years[m.years.length - 1];
+  document.querySelectorAll('[data-m]').forEach(e => e.textContent = typeof m[e.dataset.m] === 'number' ? num(m[e.dataset.m]) : m[e.dataset.m]);
+});
+
+// ---------------------------------------------------------------- the public search index (name, town, year, counts)
+const STOP = new Set(['THE', 'OF', 'AND', 'INC', 'FOR', 'A', 'IN', 'MN', 'MINNESOTA', 'INCORPORATED']);
+const keyToks = s => s.toUpperCase().replace(/&/g, ' AND ').replace(/[^A-Z0-9 ]/g, ' ').replace(/\bST\b/g, 'SAINT').split(/\s+/).filter(t => t && !STOP.has(t));
+function search(q, limit) {
+  const qt = keyToks(q); if (!qt.length) return [];
+  const out = [];
+  for (let i = 0; i < IDX.length; i++) {
+    const t = IDX[i].tok; let hit = 0, exact = 0;
+    for (const w of qt) {
+      let m = 0;
+      for (const x of t) { if (x === w) { m = 2; break; } if (x.startsWith(w)) m = 1; }
+      if (!m) { hit = -1; break; } hit++; if (m === 2) exact++;
+    }
+    if (hit < 0) continue;
+    out.push([i, exact * 3 - (t.length - qt.length) * 0.5]);
+  }
+  out.sort((a, b) => b[1] - a[1]);
+  return out.slice(0, limit || 8).map(x => x[0]);
+}
+let SLUGS = null;
+function bySlug(x) { if (!SLUGS) { SLUGS = new Map(); IDX.forEach(r => { if (!SLUGS.has(r.s)) SLUGS.set(r.s, r); }); } return SLUGS.get(x); }
+
+Promise.all([fetch('/data/index.json').then(r => r.json()), META]).then(([n]) => {
+  IDX = n; for (const r of IDX) r.tok = keyToks(r.n);
+  $('#loading').classList.add('hide');
+  if ($('#q').value) onType();
+  start();
+});
+function onType() {
+  if (!IDX) return;
+  const q = $('#q').value.trim();
+  const hits = q.length < 2 ? [] : search(q, 8);
+  $('#hits').innerHTML = hits.map(i => { const o = IDX[i];
+    return `<li><button data-s="${esc(o.s)}"><b>${esc(o.n)}</b><br><span class="small">${esc(o.c)} · ${o.y} audit · ${plural(o.k, 'finding')}${o.r ? ' · <span class="tag rep">repeat</span>' : ''}${o.yrs.length > 1 ? ' · flagged ' + o.yrs.length + ' years' : ''}</span></button></li>`;
+  }).join('') || (q.length >= 2 ? '<li class="small" style="padding:8px 2px">No match. Only groups with a finding on their federal audit are here. Try one key word from your name.</li>' : '');
+}
+$('#q').addEventListener('input', onType);
+$('#hits').addEventListener('click', e => { const b = e.target.closest('button'); if (b) location.hash = 'n=' + b.dataset.s; });
+window.addEventListener('hashchange', route);
+function route() {
+  const n = location.hash.match(/n=([a-z0-9-]+)/);
+  let slug = n && bySlug(n[1]) ? n[1] : '';
+  // No name in the link: open on the reader's own audit (a /for/ page) or a worked example, never a blank page.
+  state.example = !slug;
+  if (!slug) { slug = (FOR && bySlug(FOR.n)) ? FOR.n : (bySlug(M.example) ? M.example : (IDX.find(r => r.r && r.k >= 2) || IDX[0]).s); }
+  state.slug = slug;
+  load(); if (!state.example) window.scrollTo(0, 0);
+}
+let seq = 0;
+async function load() {
+  const my = ++seq, q = state.slug;
+  const r = PW ? await fetch('/api/data?n=' + encodeURIComponent(q), { headers: { 'x-password': PW } }) : await fetch('/api/preview?n=' + encodeURIComponent(q));
+  if (my !== seq) return;
+  if (PW && (r.status === 401 || r.status === 402)) { PW = null; store.set(null); return load(); }
+  if (!r.ok) { $('#result').classList.remove('hide'); $('#result').innerHTML = '<div class="empty">Couldn\'t load that audit. Refresh in a minute.</div>'; return; }
+  V = await r.json();
+  if (!V.full) track('preview_open', { org: q, example: state.example && !FOR ? 1 : 0 });
+  render();
+  if (V.full) fillMissing();
+}
+
+// ---------------------------------------------------------------- render
+const sevTags = f => [f.material_weakness && '<span class="tag mw">Material weakness</span>', f.significant_deficiency && '<span class="tag sd">Significant deficiency</span>',
+  f.questioned_costs && '<span class="tag qc">Questioned costs</span>', f.modified_opinion && '<span class="tag mw">Modified opinion</span>',
+  f.repeat && `<span class="tag rep">Repeat${f.prior_refs.length ? ' of ' + esc(f.prior_refs.join(', ')) : ''}</span>`].filter(Boolean).join(' ');
+const progLine = p => `<div class="prog"><b>${esc(p.name || 'Program not named')}</b> <span class="small">ALN ${esc(p.aln)} · ${esc(p.agency)}${typeof p.expended === 'number' ? ' · ' + money(p.expended) + ' spent' : ''}</span><br><span class="via">${p.direct ? 'Direct from the federal agency' : 'Passed through ' + esc(p.passthrough.join(', ') || 'an agency not named in the filing')}${p.major ? ' · major program' : ''}</span></div>`;
+
+function draftFull(d, f) {
+  return `<div class="draft"><div class="lbl">Drafted plan</div><p>${esc(d.cap_paragraph)}</p></div>
+  <div class="sec">
+    <h4>What failed</h4><p>${esc(d.what_failed)}</p>
+    <h4>Root cause</h4><p>${esc(d.root_cause)}</p>
+    ${d.why_prior_plan_fell_short ? `<h4>Why the last plan did not hold</h4><p>${esc(d.why_prior_plan_fell_short)}</p>` : ''}
+    <h4>Steps, and the record each leaves</h4><ol class="steps">${d.actions.map(a => `<li>${esc(a.step)} <span class="small">(${esc(a.owner_role)})</span><span class="rec">Record: ${esc(a.record_produced)}</span></li>`).join('')}</ol>
+    <h4>Responsible person</h4><p>${esc(d.responsible_person)}</p>
+    <h4>Completion target</h4><p>${esc(d.completion_target)}</p>
+    <h4>How management will know it held</h4><p>${esc(d.monitoring)}</p>
+  </div>`;
+}
+function findingCard(f, i) {
+  const d = f.draft, full = V.full;
+  let body;
+  if (full) body = d ? draftFull(d, f) : `<div class="draft" data-pending="${esc(f.ref)}"><div class="lbl">Drafted plan</div><p class="small">Drafting this finding now, from the auditor's text… (about a minute)</p></div>`;
+  else if (i === 0 && d && d.cap_paragraph) body = `<div class="draft"><div class="lbl">Drafted plan · free</div><p>${esc(d.cap_paragraph)}</p></div><p class="small" style="margin:8px 0 0">The full plan adds the root cause, the steps with the record each leaves, the completion target, how to monitor it, and what ${esc(V.passthroughs[0] || 'the agency')} will ask.</p>`;
+  else body = `<div class="locked"><div class="draft" aria-hidden="true"><div class="lbl">Drafted plan</div><p>Finding ${esc(f.ref)}: the organization will ••••• ••• •••••• •• ••••••• ••••• ••• ••••••• •••••••. The ••••••• •••••••• will •••••• •••• ••••• •• ••• ••••• •• •••• ••••••• •••• •• ••••••••• •• ••• •••••• ••••••••. •••••••••• •• ••• •••••• •• ••••• •••• •••• ••••.</p></div><div class="over">The plan for ${esc(f.ref)} is in the full document.</div></div>`;
+  return `<div class="card" id="f-${esc(f.ref)}"><h3><span class="ref">${esc(f.ref)}</span>${esc((d && d.title) || f.requirement_names.join(', ') || 'Finding')}</h3>
+    <div class="chips">${f.requirement_names.map(n => `<span class="tag">${esc(n)}</span>`).join('')} ${sevTags(f)}</div>
+    ${f.programs.map(progLine).join('')}
+    ${body}
+    <details><summary>What the auditor wrote</summary><div class="quote">${f.text_is_stub ? esc(f.text || '') + '\n\n(The auditor filed the finding text only in the PDF report.)' : esc(f.text)}</div></details>
+    <details><summary>What ${esc(V.org.name)} filed as its plan</summary><div class="quote">${esc(f.prior_cap || '(no plan text filed)')}</div></details>
+  </div>`;
+}
+function agencyPage() {
+  const pts = V.passthroughs;
+  const items = V.findings.map(f => f.draft && f.draft.agency_questions ? `<div class="card"><h3><span class="ref">${esc(f.ref)}</span>${esc(f.draft.title)}</h3>
+      <h4 class="small" style="margin:10px 0 2px;text-transform:uppercase;letter-spacing:.04em">They will ask</h4><ul class="steps">${f.draft.agency_questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul>
+      <h4 class="small" style="margin:10px 0 2px;text-transform:uppercase;letter-spacing:.04em">Have ready</h4><ul class="steps">${f.draft.evidence_to_attach.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div>` : '').join('');
+  return `<h2>What the agency will ask</h2>
+  <div class="agency"><h3>${pts.length ? esc(pts.join(' and ')) : 'The federal agency'} issues the management decision</h3>
+    <p class="small" style="margin:4px 0 0">Under 2 CFR 200.521(d) the pass-through has six months from the day the FAC accepted this audit (${esc(dateStr(V.org.accepted))}) to decide: by <b>${esc(dateStr(V.decision_by))}</b>. The plan below is what they read first. ${V.org.low_risk ? '' : 'This audit was not low-risk, so more programs get tested next year.'}</p>
+  </div>${items}`;
+}
+function payHtml() {
+  const rest = V.n_findings - 1;
+  return `<div class="pay" id="pay"><h3>The full plan for ${esc(V.org.name)}</h3>
+    <p>${V.n_findings === 1 ? 'This finding' : 'Every finding'}: root cause, steps with the record each leaves, owner, completion target, monitoring, the paragraph to file, and the page of questions ${esc(V.passthroughs[0] || 'the agency')} will ask. ${rest > 0 ? plural(rest, 'more drafted plan') + '. ' : ''}Print it or download it. <span class="price">$${num(M.price_usd || 100)}, once</span>.</p>
+    <button class="go" id="buy">Get the full plan</button>
+    <button class="alt" id="havepw" aria-expanded="false">Have a password?</button>
+    <form class="pwf hide" id="pwf"><input name="pw" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" aria-label="Password"><button>Open the full plan</button><p class="pwerr" role="alert"></p></form>
+    <div class="co" id="checkout"></div></div>`;
+}
+function render() {
+  const r = V.org, full = V.full, fl = r.flags;
+  const flagChips = [fl.material_weakness && '<span class="tag mw">Material weakness</span>', fl.ic_deficiency && !fl.material_weakness && '<span class="tag sd">Control deficiency</span>', fl.material_noncompliance && '<span class="tag qc">Material noncompliance</span>', fl.going_concern && '<span class="tag mw">Going concern</span>', r.flagged_years.length > 1 && `<span class="tag rep">Flagged ${r.flagged_years.join(', ')}</span>`, r.low_risk && '<span class="tag ok">Low-risk auditee</span>'].filter(Boolean).join(' ');
+  let h = (state.example ? (FOR ? `<p class="forline">${esc(FOR.line || 'Made for ' + r.name + '. Type any other name above.')}</p>` : `<p class="example">Example: what a group sees. Type your own name above.</p>`) : `<button id="back" onclick="location.hash=''">← Search another name</button>`) + `
+  <div class="who"><h1>${esc(r.name)}</h1><div class="small">${esc(r.city)} · ${r.year} Single Audit, year ending ${esc(dateStr(r.fy_end))} · ${money(r.expended)} federal · audited by ${esc(r.auditor)}</div>
+   ${full ? '<p class="full">Full plan unlocked on this device.</p>' : ''}
+   <div class="chips">${flagChips}</div>
+   <div class="big"><div><b>${num(V.n_findings)}</b>${V.n_findings === 1 ? 'finding' : 'findings'}</div><div class="r"><b>${num(V.n_repeat)}</b>repeat ${V.n_repeat === 1 ? 'finding' : 'findings'}</div><div class="d"><b>${esc(dateStr(V.decision_by))}</b>agency decision due (200.521)</div></div>
+   ${V.passthroughs.length ? `<p class="small" style="margin:10px 0 0">Pass-through: ${esc(V.passthroughs.join(', '))}</p>` : ''}
+  </div>`;
+  if (full) h += `<div><button class="dl" id="print">Print / save as PDF</button><button class="dl" id="download">Download the plan (.md)</button></div>`;
+  h += `<h2>${full ? 'The corrective action plan' : 'Findings'}</h2>` + V.findings.map(findingCard).join('');
+  h += full ? agencyPage() : payHtml();
+  if (V.history.length) h += `<h2>Earlier years</h2><table class="hist">${V.history.map(y => y.findings.map((f, i) => `<tr>${i === 0 ? `<td rowspan="${y.findings.length}"><b>${y.year}</b></td>` : ''}<td><span class="ref">${esc(f.ref)}</span>${esc(f.title || f.requirement_names.join(', '))}</td><td>${f.material_weakness ? '<span class="tag mw">MW</span>' : f.significant_deficiency ? '<span class="tag sd">SD</span>' : ''}${f.repeat ? ' <span class="tag rep">repeat</span>' : ''}</td></tr>`).join('')).join('')}</table>`;
+  $('#result').innerHTML = h; $('#result').classList.remove('hide');
+  if (!full) wirePay(); else { $('#print').onclick = () => { track('print'); window.print(); }; $('#download').onclick = download; }
+}
+
+// Paid: any finding without a pre-drafted plan is drafted now, one call per finding.
+async function fillMissing() {
+  for (const f of V.findings) {
+    if (f.draft) continue;
+    try {
+      const r = await fetch('/api/draft', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-password': PW }, body: JSON.stringify({ n: V.org.slug, ref: f.ref }) });
+      const j = await r.json();
+      if (j.draft) { f.draft = j.draft; render(); }
+      else { const el = document.querySelector(`[data-pending="${f.ref}"] p`); if (el) el.textContent = j.error || 'Could not draft this one.'; }
+    } catch (e) {}
+  }
+}
+
+// ---------------------------------------------------------------- the paywall (README "The paywall")
+const BAD = "That password didn't match. Check the email from Brick & Mortar, or reply to it for help.";
+async function unlock(pw) {
+  const r = await fetch('/api/data', { headers: { 'x-password': pw } });
+  if (!r.ok) { let m = BAD; try { m = (await r.json()).error || BAD; } catch (e) {} throw new Error(m); }
+  PW = pw; store.set(pw); track('unlock'); load();
+}
+let CO = null;
+const loadStripe = () => window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/dahlia/stripe.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); });
+function wirePay() {
+  const f = $('#pwf'), err = f.querySelector('.pwerr');
+  $('#havepw').onclick = () => { const on = f.classList.contains('hide'); f.classList.toggle('hide', !on); $('#havepw').setAttribute('aria-expanded', on); if (on) { f.querySelector('input').focus(); track('password_open'); } };
+  f.onsubmit = e => { e.preventDefault(); const v = f.querySelector('input').value.trim(); if (!v) { err.textContent = 'Enter the password from your email.'; return; } err.textContent = ''; unlock(v).catch(x => err.textContent = x.message); };
+  $('#buy').onclick = async () => {
+    const b = $('#buy'); track('checkout_open', { org: V.org.slug, findings: V.n_findings });
+    if (CO) { CO.unmount && CO.unmount(); CO.destroy && CO.destroy(); CO = null; }
+    b.disabled = true; const t = b.textContent; b.textContent = 'Loading secure checkout…';
+    try {
+      await loadStripe(); const st = Stripe(PK);
+      const opts = { fetchClientSecret: () => fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: FOR ? FOR.t : '' }) }).then(r => r.json()).then(j => { if (!j.clientSecret) throw new Error(j.error || 'Checkout could not start.'); return j.clientSecret; }) };
+      CO = await (st.createEmbeddedCheckoutPage ? st.createEmbeddedCheckoutPage(opts) : st.initEmbeddedCheckout(opts));
+      CO.mount('#checkout'); b.classList.add('hide');
+      setTimeout(() => $('#checkout').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    } catch (x) { CO = null; err.textContent = "Checkout didn't load. Refresh the page and try again, or email aidan@brickandmortar.dev."; f.classList.remove('hide'); }
+    b.disabled = false; b.textContent = t;
+  };
+}
+// Back from Stripe: /?paid=<session>. The page never shows the password; the email carries it.
+async function confirmPaid(id) {
+  const R = $('#result'); R.classList.remove('hide'); $('#home').classList.add('hide');
+  R.innerHTML = `<div class="pay"><h3 id="paidH">Confirming your payment…</h3><p id="paidP"></p><form class="pwf hide" id="pwf2"><input autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" aria-label="Password"><button>Open the full plan</button><p class="pwerr" role="alert"></p></form></div>`;
+  for (let k = 0; k < 6; k++) {
+    try {
+      const j = await (await fetch('/api/session-status?session_id=' + encodeURIComponent(id))).json();
+      if (j.paid) {
+        $('#paidH').textContent = 'Check your email for your password';
+        $('#paidP').innerHTML = `${j.email ? `Sent to <b>${esc(j.email)}</b>. ` : ''}Your receipt comes from Stripe, and the invoice carries the password too. Have it? Enter it here:`;
+        const f = $('#pwf2'); f.classList.remove('hide');
+        f.onsubmit = e => { e.preventDefault(); unlock(f.querySelector('input').value.trim()).then(() => { history.replaceState(null, '', location.pathname); $('#home').classList.remove('hide'); }).catch(x => f.querySelector('.pwerr').textContent = x.message); };
+        track('paid'); return;
+      }
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  $('#paidH').textContent = "We couldn't confirm the payment yet";
+  $('#paidP').innerHTML = `If you were charged, the password is on its way to your email. Otherwise <a href="./">go back</a> and try again, or write to aidan@brickandmortar.dev.`;
+}
+function download() {
+  const r = V.org, L = [];
+  L.push(`# Corrective Action Plan — ${r.name}`, ``, `${r.year} Single Audit, fiscal year ending ${r.fy_end}. Prepared from the findings as filed with the Federal Audit Clearinghouse (${r.accepted}).`, ``);
+  L.push(`Management decision due from ${V.passthroughs.join(' and ') || 'the federal agency'} by ${V.decision_by} (2 CFR 200.521(d)).`, ``);
+  for (const f of V.findings) {
+    const d = f.draft || {};
+    L.push(`## Finding ${f.ref}: ${d.title || f.requirement_names.join(', ')}`, ``, `Compliance requirement: ${f.requirement_names.join(', ')}. ${[f.material_weakness && 'Material weakness', f.significant_deficiency && 'Significant deficiency', f.questioned_costs && 'Questioned costs', f.repeat && 'Repeat finding' + (f.prior_refs.length ? ' (' + f.prior_refs.join(', ') + ')' : '')].filter(Boolean).join('. ')}`, ``);
+    for (const p of f.programs) L.push(`Program: ${p.name} (ALN ${p.aln}, ${p.agency})${p.direct ? ', direct' : ', passed through ' + p.passthrough.join(', ')}.`);
+    if (!d.cap_paragraph) { L.push(``, `(Plan not drafted.)`, ``); continue; }
+    L.push(``, `### Corrective action plan (2 CFR 200.511(c))`, ``, d.cap_paragraph, ``, `**What failed.** ${d.what_failed}`, ``, `**Root cause.** ${d.root_cause}`, ``);
+    if (d.why_prior_plan_fell_short) L.push(`**Why the prior plan did not hold.** ${d.why_prior_plan_fell_short}`, ``);
+    L.push(`**Steps**`, ...d.actions.map((a, i) => `${i + 1}. ${a.step} (${a.owner_role}). Record: ${a.record_produced}`), ``, `**Responsible person.** ${d.responsible_person}`, ``, `**Anticipated completion.** ${d.completion_target}`, ``, `**Monitoring.** ${d.monitoring}`, ``);
+    L.push(`### What ${V.passthroughs[0] || 'the agency'} will ask`, ...d.agency_questions.map(q => `- ${q}`), ``, `### Have ready`, ...d.evidence_to_attach.map(q => `- ${q}`), ``);
+  }
+  const blob = new Blob([L.join('\n')], { type: 'text/markdown' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cap-' + r.slug + '.md'; a.click();
+  track('download', { findings: V.findings.length });
+}
+// ---------------------------------------------------------------- start: a ?pw= link, a saved password, or a return from Stripe
+function start() {
+  const qs = new URLSearchParams(location.search), pwq = qs.get('pw'), paidq = qs.get('paid');
+  if (pwq || paidq) { qs.delete('pw'); qs.delete('paid'); history.replaceState(null, '', location.pathname + (qs.toString() ? '?' + qs : '') + location.hash); }
+  if (paidq && !pwq) return confirmPaid(paidq);
+  const saved = pwq || store.get();
+  if (saved) { PW = saved; }
+  route();
+}
+</script>
+</body>
+</html>

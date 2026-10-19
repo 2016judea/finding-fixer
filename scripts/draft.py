@@ -102,11 +102,11 @@ def main():
     cached = sum(1 for x, f in jobs if (CACHE / (x["report_id"] + "__" + f["ref"] + ".json")).exists())
     print(f"{len(jobs)} findings on {len(audits)} audits; {cached} cached", flush=True)
     drafts = {}  # rebuilt from the cache every run, so the guard covers old drafts too
+    for x, f in jobs:  # seed with every cached draft, so a mid-run write is never a partial file
+        c = CACHE / (x["report_id"] + "__" + f["ref"] + ".json")
+        if c.exists():
+            drafts[f"{x['report_id']}|{f['ref']}"] = guarded(x, f, json.loads(c.read_text()))
     if a.collect:
-        for x, f in jobs:
-            c = CACHE / (x["report_id"] + "__" + f["ref"] + ".json")
-            if c.exists():
-                drafts[f"{x['report_id']}|{f['ref']}"] = guarded(x, f, json.loads(c.read_text()))
         OUT.write_text(json.dumps(drafts))
         print(f"{len(drafts)} drafts collected into {OUT}")
         return

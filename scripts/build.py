@@ -15,7 +15,9 @@ Writes
 
 Only `entity_type == "non-profit"` rows ship; schools, counties and tribes are a different buyer.
 """
+import calendar
 import collections
+import datetime
 import json
 import re
 from pathlib import Path
@@ -144,12 +146,24 @@ def main():
     PUB.mkdir(parents=True, exist_ok=True)
     (PUB / "index.json").write_text(json.dumps(index, separators=(",", ":")))
 
-    # The worked example the page opens on: the newest audit with a repeat finding and two or more drafted plans.
+    # The worked example the page opens on: a repeat finding whose first (free) finding is drafted, preferring
+    # an audit whose pass-through decision (2 CFR 200.521, six months from FAC acceptance) is still
+    # ahead, so the example is a plan someone could still file; newest acceptance first.
+    rank = lambda f: f["repeat"] * 8 + f["material_weakness"] * 4 + f["questioned_costs"] * 2 + f["significant_deficiency"]
+    first_ref = lambda a: sorted(a["findings"], key=lambda f: (-rank(f), f["ref"]))[0]["ref"]  # the free paragraph's finding
+
+    def still_open(a):
+        if not a.get("accepted"):
+            return False
+        d = datetime.date.fromisoformat(a["accepted"])
+        m = d.month + 6
+        y, m = d.year + (m - 1) // 12, (m - 1) % 12 + 1
+        return datetime.date(y, m, min(d.day, calendar.monthrange(y, m)[1])) >= datetime.date.today()
     drafts = json.loads((PRIV / "drafts.json").read_text()) if (PRIV / "drafts.json").exists() else {}
     drafted = lambda a: sum(1 for f in a["findings"] if f"{a['report_id']}|{f['ref']}" in drafts)
     ex = sorted([a for a in audits if a["latest"] and any(f["repeat"] for f in a["findings"]) and len(a["findings"]) >= 2],
-                key=lambda a: (-a["year"], -drafted(a), a["slug"]))
-    example = next((a["slug"] for a in ex if drafted(a) >= 2), ex[0]["slug"] if ex else (audits[0]["slug"] if audits else ""))
+                key=lambda a: (not still_open(a), -len(a["flagged_years"]), -int((a["accepted"] or "0").replace("-", "")), -drafted(a), a["slug"]))
+    example = next((a["slug"] for a in ex if drafted(a) >= 1 and f"{a['report_id']}|{first_ref(a)}" in drafts), ex[0]["slug"] if ex else (audits[0]["slug"] if audits else ""))
 
     years = sorted({a["year"] for a in audits})
     np_all = collections.Counter(int(g["audit_year"]) for g in G if g["entity_type"] == "non-profit")

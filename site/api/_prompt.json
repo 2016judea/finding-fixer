@@ -40,8 +40,6 @@
    },
    "actions": {
     "type": "array",
-    "minItems": 3,
-    "maxItems": 5,
     "items": {
      "type": "object",
      "additionalProperties": false,
@@ -63,7 +61,8 @@
        "description": "The document or log this step leaves behind for the agency to inspect."
       }
      }
-    }
+    },
+    "description": "3 to 5 items."
    },
    "responsible_person": {
     "type": "string",
@@ -83,21 +82,17 @@
    },
    "agency_questions": {
     "type": "array",
-    "minItems": 3,
-    "maxItems": 5,
     "items": {
      "type": "string"
     },
-    "description": "What the pass-through agency's grant manager will ask when reviewing this plan for the management decision."
+    "description": "What the pass-through agency's grant manager will ask when reviewing this plan for the management decision. 3 to 5 items."
    },
    "evidence_to_attach": {
     "type": "array",
-    "minItems": 2,
-    "maxItems": 5,
     "items": {
      "type": "string"
     },
-    "description": "Documents to send with the plan or keep ready for the agency."
+    "description": "Documents to send with the plan or keep ready for the agency. 2 to 5 items."
    }
   }
  }

@@ -175,3 +175,11 @@ test('the static tree (site/public) holds no finding text, filed plan or draft; 
   assert.match(dep, /\(PRIVATE \/ "data", "api\/_full"\)/);
   assert.match(dep, /"outputDirectory": "public"/);
 });
+
+test('the live route schema is one the Messages API accepts (no minItems above 1, no maxItems)', () => {
+  const PROMPT = require('../site/api/_prompt.json');
+  const bad = [];
+  (function walk(n, at) { if (!n || typeof n !== 'object') return; if ((n.minItems || 0) > 1 || 'maxItems' in n) bad.push(at); for (const [k, v] of Object.entries(n)) walk(v, at + '.' + k); })(PROMPT.schema, 'schema');
+  assert.deepStrictEqual(bad, []);
+  assert.ok(PROMPT.schema.required.includes('vs_filed_plan'));
+});

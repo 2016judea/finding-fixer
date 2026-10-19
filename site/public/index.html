@@ -269,7 +269,7 @@ function render() {
   <div class="who"><h1>${esc(r.name)}</h1><div class="small">${esc(r.city)} · ${r.year} Single Audit, year ending ${esc(dateStr(r.fy_end))} · ${money(r.expended)} federal · audited by ${esc(r.auditor)}</div>
    ${full ? '<p class="full">Full plan unlocked on this device.</p>' : ''}
    <div class="chips">${flagChips}</div>
-   <div class="big"><div><b>${num(V.n_findings)}</b>${V.n_findings === 1 ? 'finding' : 'findings'}</div><div class="r"><b>${num(V.n_repeat)}</b>repeat ${V.n_repeat === 1 ? 'finding' : 'findings'}</div><div class="d"><b>${esc(dateStr(V.decision_by))}</b>agency decision due (200.521)</div></div>
+   <div class="big"><div><b>${num(V.n_findings)}</b>${V.n_findings === 1 ? 'finding' : 'findings'}</div><div class="r"><b>${num(V.n_repeat)}</b>repeat ${V.n_repeat === 1 ? 'finding' : 'findings'}</div><div class="d"><b>${esc(dateStr(V.decision_by))}</b>agency decision ${V.decision_by && V.decision_by < new Date().toISOString().slice(0, 10) ? 'was due' : 'due'} (200.521)</div></div>
    ${V.passthroughs.length ? `<p class="small" style="margin:10px 0 0">Pass-through: ${esc(V.passthroughs.join(', '))}</p>` : ''}
   </div>`;
   if (full) h += `<div><button class="dl" id="print">Print / save as PDF</button><button class="dl" id="download">Download the plan (.md)</button></div>`;

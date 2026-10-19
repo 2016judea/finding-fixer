@@ -128,7 +128,22 @@ def scrub(value, ok, removed):
     return WORDNUM.sub(wsub, NUM.sub(sub, value))
 
 
+
+def api_schema(node):
+    """The Messages API's structured outputs reject minItems above 1 and any maxItems (400,
+    2026-10-19); claude -p accepts them. Same schema for the live route, with the counts moved
+    into the description."""
+    if isinstance(node, list):
+        return [api_schema(x) for x in node]
+    if not isinstance(node, dict):
+        return node
+    out = {k: api_schema(v) for k, v in node.items() if k not in ("minItems", "maxItems")}
+    if "minItems" in node or "maxItems" in node:
+        out["description"] = (node.get("description", "") + f" {node.get('minItems', 1)} to {node.get('maxItems', 'any number of')} items.").strip()
+    return out
+
+
 if __name__ == "__main__":
     out = Path(__file__).resolve().parent.parent / "site/api/_prompt.json"
-    out.write_text(json.dumps({"system": SYSTEM, "schema": SCHEMA}, indent=1))
+    out.write_text(json.dumps({"system": SYSTEM, "schema": api_schema(SCHEMA)}, indent=1))
     print("wrote", out)

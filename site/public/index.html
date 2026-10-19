@@ -237,7 +237,7 @@ function findingCard(f, i) {
   else body = `<div class="locked"><div class="draft" aria-hidden="true"><div class="lbl">Drafted plan</div><p>Finding ${esc(f.ref)}: the organization will ••••• ••• •••••• •• ••••••• ••••• ••• ••••••• •••••••. The ••••••• •••••••• will •••••• •••• ••••• •• ••• ••••• •• •••• ••••••• •••• •• ••••••••• •• ••• •••••• ••••••••. •••••••••• •• ••• •••••• •• ••••• •••• •••• ••••.</p></div><div class="over">The plan for ${esc(f.ref)} is in the full document.</div></div>`;
   return `<div class="card" id="f-${esc(f.ref)}"><h3><span class="ref">${esc(f.ref)}</span>${esc((d && d.title) || f.requirement_names.join(', ') || 'Finding')}</h3>
     <div class="chips">${f.requirement_names.map(n => `<span class="tag">${esc(n)}</span>`).join('')} ${sevTags(f)}</div>
-    ${f.programs.map(progLine).join('')}
+    ${f.programs.slice(0, 2).map(progLine).join('')}${f.programs.length > 2 ? `<details class="more"><summary>${f.programs.length - 2} more program${f.programs.length === 3 ? '' : 's'}</summary>${f.programs.slice(2).map(progLine).join('')}</details>` : ''}
     ${body}
     <details><summary>What the auditor wrote</summary><div class="quote">${f.text_is_stub ? esc(f.text || '') + '\n\n(The auditor filed the finding text only in the PDF report.)' : esc(f.text)}</div></details>
     <details><summary>What ${esc(V.org.name)} filed as its plan</summary><div class="quote">${esc(f.prior_cap || '(no plan text filed)')}</div></details>

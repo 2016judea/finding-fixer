@@ -125,7 +125,8 @@ def scrub(value, ok, removed):
             return m.group()
         removed.append(m.group())
         return "[number]"
-    return WORDNUM.sub(wsub, NUM.sub(sub, value))
+    # "This draft adds all five." with the count blanked reads "all [number]"; say "all of these".
+    return re.sub(r"\ball \[number\](?=[\s:.,;])", "all of these", WORDNUM.sub(wsub, NUM.sub(sub, value)))
 
 
 

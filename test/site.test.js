@@ -135,11 +135,11 @@ test('number guard: a figure the model was not shown becomes [number]; figures f
   const { allowedNumbers, scrub } = require('../site/api/_guard.js');
   const src = 'Questioned costs of $9,558 in 7 of the 29 files tested, seven of them late. See 34 CFR 668.22(f).';
   const sys = 'Under 2 CFR 200.511(c) and 200.521.';
-  const draft = { cap_paragraph: 'We will fix 7 of 29 files ($9,558) per 34 CFR 668.22(f) and 2 CFR 200.511(c) by June 2025, testing 40 files for four quarters, all seven of them.', _model: 'opus 5' };
+  const draft = { cap_paragraph: 'We will fix 7 of 29 files ($9,558) per 34 CFR 668.22(f) and 2 CFR 200.511(c) by June 2025, testing 40 files for four quarters, all seven of them. It adds all five.', _model: 'opus 5' };
   const removed = [];
   const out = scrub(draft, allowedNumbers(src, sys), removed);
-  assert.deepStrictEqual(removed, ['2025', '40', 'four']);
-  assert.strictEqual(out.cap_paragraph, 'We will fix 7 of 29 files ($9,558) per 34 CFR 668.22(f) and 2 CFR 200.511(c) by June [number], testing [number] files for [number] quarters, all seven of them.');
+  assert.deepStrictEqual(removed, ['2025', '40', 'four', 'five']);
+  assert.strictEqual(out.cap_paragraph, 'We will fix 7 of 29 files ($9,558) per 34 CFR 668.22(f) and 2 CFR 200.511(c) by June [number], testing [number] files for [number] quarters, all seven of them. It adds all of these.');
   assert.strictEqual(out._model, 'opus 5');
   const py = execFileSync('python3', ['-c', `import sys,json;sys.path.insert(0,${JSON.stringify(path.join(ROOT, 'scripts'))});import prompt as p;p.SYSTEM=${JSON.stringify(sys)};r=[];o=p.scrub(json.loads(sys.argv[1]),p.allowed_numbers(sys.argv[2]),r);print(json.dumps([o['cap_paragraph'],r]))`, JSON.stringify(draft), src]).toString();
   assert.deepStrictEqual(JSON.parse(py), [out.cap_paragraph, removed]);

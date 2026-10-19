@@ -26,7 +26,7 @@ function scrub(v, ok, removed) {
     if (ok.has(m.toLowerCase())) return m;
     removed.push(m);
     return "[number]";
-  });
+  }).replace(/\ball \[number\](?=[\s:.,;])/g, "all of these");
 }
 
 module.exports = { allowedNumbers, scrub };

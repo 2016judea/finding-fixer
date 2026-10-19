@@ -90,12 +90,28 @@ def drafted(a, f):
     return f"{a['report_id']}|{f['ref']}" in D
 
 
+def tc(s):
+    """Title case for names the FAC files in capitals; small words lower, initialisms kept."""
+    if not s or any(c.islower() for c in s):
+        return s
+    small = {"of", "and", "for", "the", "or", "to", "in", "on", "with", "a"}
+    out = []
+    for i, w in enumerate(s.split()):
+        lw = w.lower()
+        out.append(lw if i and lw in small else (w if len(w) <= 3 and w.isalpha() and lw not in small and lw not in {"inc", "inc.", "llc"} and w in {"ASI", "HUD", "WIOA", "TANF", "MN", "CDBG", "LLC", "CAPI", "USA", "YMCA", "YWCA", "PPL", "CLUES", "LLP", "PLLP", "PA", "CPA", "CPAS"} else lw.capitalize()))
+    return " ".join(out).replace("Inc.", "Inc.").replace("'S ", "'s ")
+
+
+def poss(name):
+    return name + ("'" if name.endswith("s") else "'s")
+
+
 def own_line(a, f):
-    what = ", ".join(f["requirement_names"]) or "a compliance requirement"
-    prog = (f["programs"][0]["name"] if f["programs"] else "") or "a federal program"
+    what = ", ".join(n for n in f["requirement_names"] if n.lower() != "other")
+    prog = tc((f["programs"][0]["name"] if f["programs"] else "") or "a federal program")
     rep = f", a repeat of {', '.join(f['prior_refs'])}" if f["repeat"] and f["prior_refs"] else (", a repeat finding" if f["repeat"] else "")
-    return (f"{a['name']}'s {a['year']} Single Audit, accepted by the Federal Audit Clearinghouse on {nice(a['accepted'])}, "
-            f"carries finding {f['ref']} on {prog} ({what.lower()}){rep}.")
+    return (f"{poss(tc(a['name']))} {a['year']} Single Audit, accepted by the Federal Audit Clearinghouse on {nice(a['accepted'])}, "
+            f"carries finding {f['ref']} on {prog}{' (' + what.lower() + ')' if what else ''}{rep}.")
 
 
 def fact_line(a, f):
@@ -103,9 +119,12 @@ def fact_line(a, f):
     due = clock(a["accepted"])
     if due >= TODAY and pt:
         return f"{pt} has until {nice(due)} to issue its management decision on it, and the plan is what it reads first."
-    if len(a["flagged_years"]) > 1:
-        return f"The FAC shows findings on {a['name']}'s audits in {len(a['flagged_years'])} of the last four years ({', '.join(map(str, a['flagged_years']))})."
-    return f"The plan filed with it names who and when, but not why it happened or what record will show it was fixed."
+    yrs = a["flagged_years"]
+    if len(yrs) == 4:
+        return f"The FAC shows a finding on {poss(tc(a['name']))} audit every year from 2022 to 2025."
+    if len(yrs) > 1:
+        return f"The FAC shows findings on {poss(tc(a['name']))} audits in {', '.join(map(str, yrs[:-1]))} and {yrs[-1]}."
+    return f"{pt or 'The federal agency'} issues the management decision on it, and the plan is what it reads first."
 
 
 rows = []
@@ -144,7 +163,7 @@ for e, group in sorted(by_email.items(), key=lambda kv: -len(kv[1])):
     if not drafted(a, f):
         continue
     if add("manager", a["name"], person(a["contact"]["name"]), e, a["accepted"], a, f,
-           f"You are the filed contact on {len(group)} entities with a flagged Single Audit. The newest: {own_line(a, f)}",
+           f"You are the contact filed for {len(group)} entities with a flagged Single Audit. The newest: {own_line(a, f)}",
            fact_line(a, f), f"{len(group)} entities name you as their contact. This one is the newest."):
         n += 1
         for x in group:
@@ -176,14 +195,17 @@ for k, group in sorted(firm.items(), key=lambda kv: -len(kv[1])):
     for a in sorted(group, key=lambda x: x["accepted"] or "", reverse=True):
         f = first(a)
         e = a["auditor"]["email"].strip().lower()
+        # Open on a client that reads as Minnesota: some MN-filed parents file for out-of-state entities.
+        if any(st in a["name"].upper() for st in ("TEXAS", "MONTANA", "DAKOTA,", "CALIFORNIA", "GREAT FALLS", "CAPITOLA", "JAMESTOWN", "IOWA", "WISCONSIN")):
+            continue
         if not drafted(a, f) or not e or e in taken_email:
             continue
-        own = (f"{a['auditor']['firm']} signed {len(group)} Minnesota nonprofit Single Audits with findings filed since 2024. "
+        own = (f"{tc(a['auditor']['firm'])} signed {len(group)} Minnesota nonprofit Single Audits with findings filed since 2024. "
                f"The newest: {own_line(a, f)}")
         taken_org.discard(a["slug"])  # a firm may open on a client another segment also names
         if add("auditor", a["auditor"]["firm"], person(a["auditor"]["contact"]), e, a["accepted"], a, f, own,
-               "Each of those clients now owes its pass-through a corrective action plan, and most filed plans copy the recommendation back.",
-               f"A client of {a['auditor']['firm']}. The plan below is the kind you could hand them."):
+               f"{sum(any(x['repeat'] for x in c['findings']) for c in group)} of those {len(group)} carry a repeat finding, a plan that was filed and did not hold.",
+               f"A client of {tc(a['auditor']['firm'])}. The plan below is the kind you could hand them."):
             n += 1
             break
 
@@ -222,7 +244,7 @@ for r in rows:
         price = f" The full plan, every finding answered in the 200.511(c) form with the page of what the agency will ask, is ${PRICE}, once."
     body = "\n".join([
         f"To: {r['email']}",
-        f"Subject: bricks / {title_case(r['company'])}",
+        f"Subject: bricks / {tc(r['company'])}",
         "",
         f"{r['own_record']} {r['fact']}",
         "",

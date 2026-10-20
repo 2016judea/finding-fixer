@@ -103,7 +103,7 @@ python3 scripts/deploy.py         # Vercel production over the REST API (--setup
 
 ## Distribution
 
-Round 1 is drafted, not sent (`outreach/round1/`, gitignored; `scripts/round1.py`). 50 recipients drafted on 2026-10-19: 20 repeat-finding nonprofits, 12 first-time findings whose 200.521 clock is still open, 8 finance contacts filed for several flagged entities, 10 audit firms; 3 fiscal sponsors held (no flagged audit of their own to open on). Segments: the flagged
+Round 1 is drafted, not sent (`outreach/round1/`, gitignored; `scripts/round1.py`). 50 recipients drafted on 2026-10-19: 22 repeat-finding nonprofits, 10 first-time findings whose 200.521 clock is still open, 8 finance contacts filed for several flagged entities, 10 audit firms; 3 fiscal sponsors held (no flagged audit of their own to open on). Segments: the flagged
 nonprofits themselves (repeaters first), their auditors (one email per firm, with the firm's own
 offer), and Minnesota fiscal sponsors and nonprofit intermediaries with a public address. Each
 recipient's `/for/<token>/` page opens on their own audit; a recipient with no row of their own is

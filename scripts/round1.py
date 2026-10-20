@@ -36,7 +36,7 @@ PRICE = json.loads((ROOT / "site/public/offer.json").read_text())["price_usd"]
 A = json.loads((ROOT / "private/data/audits.json").read_text())
 D = json.loads((ROOT / "private/data/drafts.json").read_text())
 L = [a for a in A if a["latest"]]
-TARGET = {"repeat": 20, "clock": 12, "manager": 8, "auditor": 10}
+TARGET = {"repeat": 22, "clock": 12, "manager": 8, "auditor": 10}
 
 contacted = {r[0] for r in duckdb.connect(str(Path.home() / "Desktop/outreach-ledger/outreach.duckdb"), read_only=True)
              .sql("select lower(recipient_key) from contacted where recipient_key is not null").fetchall()}

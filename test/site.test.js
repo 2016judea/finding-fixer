@@ -119,8 +119,9 @@ test('/for/<token>/ pages build from the ledger with the variant and no variant 
   const led = path.join(ROOT, 'outreach/round1/ledger.csv');
   if (!fs.existsSync(led)) return;
   execFileSync('python3', [path.join(ROOT, 'scripts/build_for.py')]);
-  const rows = fs.readFileSync(led, 'utf8').trim().split('\n').slice(1).filter(Boolean);
-  const live = rows.filter(r => !/,hold,/.test(r));
+  const leds = fs.readdirSync(path.dirname(led)).filter(f => /^ledger(_.*)?\.csv$/.test(f));
+  const rows = leds.flatMap(f => fs.readFileSync(path.join(path.dirname(led), f), 'utf8').trim().split('\n').slice(1).filter(Boolean));
+  const live = [...new Set(rows.filter(r => !/,hold,/.test(r)).map(r => r.split(',')[0]))];
   const dirs = fs.existsSync(path.join(ROOT, 'private/for')) ? fs.readdirSync(path.join(ROOT, 'private/for')) : [];
   assert.strictEqual(dirs.length, live.length);
   for (const d of dirs.slice(0, 5)) {

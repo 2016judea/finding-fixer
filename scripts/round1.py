@@ -36,6 +36,12 @@ PRICE = json.loads((ROOT / "site/public/offer.json").read_text())["price_usd"]
 A = json.loads((ROOT / "private/data/audits.json").read_text())
 D = json.loads((ROOT / "private/data/drafts.json").read_text())
 L = [a for a in A if a["latest"]]
+# A rerun replaces every token, and tokens already sent in an email would 404 (2026-10-19). Refuse
+# to overwrite a ledger with any row past drafted; move it aside by hand first.
+_led = OUT / "ledger.csv"
+if _led.exists() and any(r.get("status") not in ("drafted", "hold", "held", "") for r in csv.DictReader(_led.open())):
+    raise SystemExit(f"{_led} has scheduled/sent rows; their /for/ links are live in email. Not overwriting.")
+
 TARGET = {"repeat": 22, "clock": 12, "manager": 8, "auditor": 10}
 
 contacted = {r[0] for r in duckdb.connect(str(Path.home() / "Desktop/outreach-ledger/outreach.duckdb"), read_only=True)

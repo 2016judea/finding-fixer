@@ -44,7 +44,7 @@ if _led.exists() and any(r.get("status") not in ("drafted", "hold", "held", "") 
 
 TARGET = {"repeat": 22, "clock": 12, "manager": 8, "auditor": 10}
 
-contacted = {r[0] for r in duckdb.connect(str(Path.home() / "Desktop/outreach-ledger/outreach.duckdb"), read_only=True)
+contacted = {r[0] for r in duckdb.connect(str(Path.home() / "Desktop/workspace/outreach-ledger/outreach.duckdb"), read_only=True)
              .sql("select lower(recipient_key) from contacted where recipient_key is not null").fetchall()}
 
 

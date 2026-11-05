@@ -27,7 +27,7 @@ CHUNK = 80  # report_ids per in-list
 
 
 def key():
-    for p in (ROOT / ".env", Path.home() / "Desktop/bricks/.env"):
+    for p in (ROOT / ".env", Path.home() / "Desktop/workspace/bricks/.env"):
         if p.exists():
             for line in p.read_text().splitlines():
                 if line.startswith("FAC_API_KEY="):

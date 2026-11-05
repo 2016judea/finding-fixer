@@ -6,7 +6,7 @@
 
 Not the CLI: `vercel deploy --prod` has returned BLOCKED on this account with no error while
 /v13/deployments goes READY (unit-turns-mpls, 2026-10-17). Polls readyState, exits non-zero on
-anything but READY. Keys come from ~/Desktop/bricks/.env (the keyring) unless set in the
+anything but READY. Keys come from ~/Desktop/workspace/bricks/.env (the keyring) unless set in the
 environment. ACCESS_SECRET is generated once into .access_secret (gitignored) and mirrored
 into ./.env for fulfil.py and issue_password.py.
 
@@ -32,7 +32,7 @@ OFFER = json.loads((SITE / "public/offer.json").read_text())
 PROJECT = OFFER["product"]
 TEAM = "team_XnhPzBEcaSfEmZFo9M2isLFY"
 SKIP = {".git", "node_modules", ".vercel", "__pycache__", ".DS_Store", ".env"}
-KEYRING = Path.home() / "Desktop/bricks/.env"
+KEYRING = Path.home() / "Desktop/workspace/bricks/.env"
 
 
 def env(name):
